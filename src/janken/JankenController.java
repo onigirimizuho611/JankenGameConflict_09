@@ -1,104 +1,66 @@
-//JankenView .java
+//JankenController.java
 package janken;
 
-import javafx.application.Application;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import java.util.Random;
+
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
-public class JankenView extends Application {
+public class JankenController {
 
-  private Label cpuLabel;
- private Label humanLabel;
- private Label resultLabel;
+     private final Random random = new Random();
+     private  static final String[] hands = {
+         "グー", "チョキ", "パー"
+     };
 
- private Label  scoreLabel;
+      private Label cpuHandLabel;
+      private Label myHandLabel;
+      private Label resultLabel;
+      private Label scoreLabel;
+      //コンストラクタ
+      //引数  3つのラベル
+      public JankenController(Label cpuHandLabel, Label myHandLabel,
+        Label resultLabel,Label scoreLabel){
+       this.cpuHandLabel = cpuHandLabel;
+       this.myHandLabel = myHandLabel;
+       this.resultLabel = resultLabel;
+       this.scoreLabel = scoreLabel;
 
- private Button guButton;
- private Button cyokiButton;
- private Button paButton;
+      }
+     // 自分の手をグーとしてじゃんけんをするメソッド
+       public void putOutRockHand() {
+         doJanken(0);
+     }
 
- private JankenController jc;//じゃんけん制御オブジェクト変数
+    // 自分の手をチョキとしてじゃんけんをするメソッド
+     public void putOutScissorsHand() {
+         doJanken(1);
+     }
 
-  @Override
- public void start(Stage stage) throws Exception {
-   stage.setTitle("じゃんけんゲーム");
-   stage.setWidth(450);
-   stage.setHeight(300);
+  // 自分の手をパーとしてじゃんけんをするメソッド
+   public void putOutPaperHand() {
+         doJanken(2);
+     }
 
-  myLayout(stage);
+   //ラベルの更新メソッドであるupdateLabels()を呼び出し
+   //自分の手(myHand)と相手の手(cpuHand)を渡す
+   //CPUの手はgetCpuHand()で取得
+     private void doJanken(int myHand) {
+         updateLabels(myHand, getCpuHand());
+     }
+   //CPUの手
+     private int getCpuHand() {
+         return random.nextInt(3);
+     }
+     //じゃんけんの結果の取得
+     private String getResult(int myHand, int cpuHand) {
+         int r = (myHand - cpuHand + 3) % 3;
 
-   stage.show();
-
- //じゃんけん制御クラスのインスタンス
- jc = new JankenController(cpuLabel, humanLabel, resultLabel,scoreLabel);
- //イベント処理
- guButton.setOnAction(event -> jc.putOutRockHand());
- cyokiButton.setOnAction(evet -> jc.putOutScissorsHand());
- paButton.setOnAction(evet -> jc.putOutPaperHand());
- }
-
-
- //画面に表示するGUI部品の基本的な設定
- private void myLayout(Stage stage) {
-  Font font = new Font("MS ゴシック", 20);
-
-  guButton = new Button("グー");
-  guButton.setPrefSize(100, 20);
-  guButton.setFont(font);
-
-  cyokiButton = new Button("チョキ");
-  cyokiButton.setPrefSize(100, 20);
-  cyokiButton.setFont(font);
-
-  paButton = new Button("パー");
-  paButton.setPrefSize(100, 20);
-  paButton.setFont(font);
-
-  cpuLabel = new Label("コンピュータの手:-");
-  cpuLabel.setFont(font);
-  humanLabel = new Label("あなたの手:-");
-  humanLabel.setFont(font);
-  resultLabel = new Label("じゃんけん結果:-");
-  resultLabel.setFont(font);
-
-  //HBox:水平方向に配置レイアウト
-  HBox hbox = new HBox();
-  //hboxの配置位置
-  hbox.setAlignment(Pos.CENTER);
-
-  //HBOXと周囲のコントロールとの隙間
-  hbox.setPadding(new Insets(10, 10, 10, 10));
-  //hboxに配置するコントロールの隙間
-  hbox.setSpacing(10);
-  //hboxにコントロールを設置
-  hbox.getChildren().addAll(guButton, cyokiButton, paButton);
-
-  //VBox：垂直方向に配置するレイアウト
-  VBox vbox = new VBox();
-  //vboxの配置位置
-  vbox.setAlignment(Pos.CENTER);
-  //vboxに配置するコントロールの隙間
-  vbox.setSpacing(8);
-  //vboxにコントロールを設置
-  vbox.getChildren().addAll(cpuLabel, humanLabel, resultLabel, hbox);
-
-   scoreLabel = new Label("");
-  scoreLabel.setFont(font);
-  vbox.getChildren().add(scoreLabel);
-
-  Scene scene = new Scene(vbox);
-  stage.setScene(scene);
-}
-
-public static void main(String[] args) {
-  launch();
- }
-
+         return (r == 2) ? "あなたの勝ち！" : ((r == 1) ? "あなたの負け！" : "あいこ！");
+     }
+     //自分の手・相手の手・じゃんけんの結果を各ラベルに表示
+     private void updateLabels(int myHand, int cpuHand) {
+         cpuHandLabel.setText("コンピュータの手: " + hands[cpuHand]);
+         myHandLabel.setText("あなたの手: " + hands[myHand]);
+         resultLabel.setText("結果: " + getResult(myHand, cpuHand));
+     }
 }
